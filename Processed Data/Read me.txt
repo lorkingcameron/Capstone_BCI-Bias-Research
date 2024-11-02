@@ -1,0 +1,5 @@
+﻿Data structure: data, label
+Data: epoch x channel x time
+Label: string
+2 classes: _negative and _positive
+5 classes (actually 4 classes): _class_1, _class_2, _class_4, _class_5
