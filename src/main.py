@@ -1,10 +1,13 @@
 import scipy.io
 import numpy as np
+import os
+
+PATH = os.path.dirname(os.path.dirname(__file__))
 
 
 def data_preprocessing_2_classes():
     # Epoch * Channel * Time
-    file_path = 'C:/Users/lorki/Files/Uni/2024_Spring/Capstone/Processed Data/2 classes/'
+    file_path = PATH + '/Processed Data/2 classes/'
     file_list_length = 20
     all_data = {}
     for i in range(1, file_list_length + 1):
@@ -21,7 +24,7 @@ def data_preprocessing_2_classes():
 
 def data_preprocessing_5_classes():
     # Epoch * Channel * Time
-    file_path = 'C:/Users/lorki/Files/Uni/2024_Spring/Capstone/Processed Data/5 classes/'
+    file_path = PATH + '/Processed Data/5 classes/'
     file_list_length = 20
     num_classes = 4
     all_data = {}
