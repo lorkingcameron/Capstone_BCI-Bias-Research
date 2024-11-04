@@ -1,7 +1,7 @@
 import scipy.io
 import numpy as np
 from sklearn.utils import shuffle
-
+import random
 
 def data_preprocessing_2_classes(abs_path):
     # Epoch * Channel * Time
@@ -64,9 +64,23 @@ def data_preprocessing_5_classes(abs_path):
     data_x_padded = [np.pad(x, ((0, max_epochs - x.shape[0]), (0, max_channels - x.shape[1]), (0, max_time - x.shape[2])), mode='constant') for x in data_x]
     data_x_padded = np.stack(data_x_padded, axis=0)[..., np.newaxis]  # Shape: (batch_size, max_epochs, channels, time, 1)
     
-    print(data_x_padded.shape)
-    
-    x_shuffled, y_shuffled = shuffle(np.array(data_x_padded), np.array(data_y))
-    
-    
+    data_x_standardised = standardise_per_channel(data_x_padded)
+
+    shuffle_seed = random.randint(0, 4294967295) #inclucive
+    print("Shuffle Seed:", shuffle_seed)
+    x_shuffled, y_shuffled = shuffle(np.array(data_x_standardised), np.array(data_y), random_state=shuffle_seed)
+        
     return all_data, x_shuffled, y_shuffled, max_epochs, max_channels, max_time
+
+
+def standardise_per_channel(data, epsilon=1e-8):
+    # data shape: (samples, epochs, channels, time)
+    
+    # Calculate mean and std along the time axis (axis=-1) for each sample, epoch, and channel    
+    channel_stds = np.std(data, axis=(0, 1, 3), keepdims=True)    # Shape: (samples, epochs, channels, 1)
+    channel_means = np.mean(data, axis=(0, 1, 3), keepdims=True)  # Shape: (1, 1, channels, 1)
+    
+    # Standardize each channel independently along the time axis
+    standardized_data = (data - channel_means) / (channel_stds + epsilon)
+    
+    return standardized_data

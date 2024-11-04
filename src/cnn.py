@@ -4,6 +4,7 @@ from tf_keras.models import Sequential
 from tf_keras.layers import Conv3D, MaxPooling3D, Flatten, Dense, Dropout
 from tf_keras.utils import to_categorical
 from sklearn.model_selection import train_test_split
+from augmentation import augment_data
 
 
 # Assuming your data has the shape (epochs, channels, time)
@@ -15,6 +16,8 @@ def run_cnn(data_x, data_y, params):
     
     x_train, x_test, y_train, y_test = train_test_split(data_x, data_y, test_size=0.2, random_state=42)
 
+    # x_train, y_train = augment_data(x_train, y_train, num_augmentations=3)
+    
     # Convert labels to categorical
     y_train = to_categorical(y_train, num_classes=params["num_classes"])
     y_test = to_categorical(y_test, num_classes=params["num_classes"])
