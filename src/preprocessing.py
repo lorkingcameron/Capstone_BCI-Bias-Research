@@ -30,9 +30,7 @@ def data_preprocessing_2_classes(abs_path):
     # Pad each sample to have the same number of epochs (padding along the epochs axis)
     data_x_padded = [np.pad(x, ((0, max_epochs - x.shape[0]), (0, max_channels - x.shape[1]), (0, max_time - x.shape[2])), mode='constant') for x in data_x]
     data_x_padded = np.stack(data_x_padded, axis=0)[..., np.newaxis]  # Shape: (batch_size, max_epochs, channels, time, 1)
-    
-    print(data_x_padded.shape)
-    
+        
     x_shuffled, y_shuffled = shuffle(np.array(data_x_padded), np.array(data_y))
     
     
@@ -62,13 +60,13 @@ def data_preprocessing_5_classes(abs_path):
     
     # Pad each sample to have the same number of epochs (padding along the epochs axis)
     data_x_padded = [np.pad(x, ((0, max_epochs - x.shape[0]), (0, max_channels - x.shape[1]), (0, max_time - x.shape[2])), mode='constant') for x in data_x]
-    data_x_padded = np.stack(data_x_padded, axis=0)[..., np.newaxis]  # Shape: (batch_size, max_epochs, channels, time, 1)
+    # data_x_padded = np.stack(data_x_padded, axis=0)[..., np.newaxis]  # Shape: (batch_size, max_epochs, channels, time, 1)
     
-    data_x_standardised = standardise_per_channel(data_x_padded)
+    # data_x_standardised = standardise_per_channel(data_x_padded)
 
     shuffle_seed = random.randint(0, 4294967295) #inclucive
     print("Shuffle Seed:", shuffle_seed)
-    x_shuffled, y_shuffled = shuffle(np.array(data_x_standardised), np.array(data_y), random_state=shuffle_seed)
+    x_shuffled, y_shuffled = shuffle(np.array(data_x_padded), np.array(data_y), random_state=shuffle_seed)
         
     return all_data, x_shuffled, y_shuffled, max_epochs, max_channels, max_time
 
