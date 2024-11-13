@@ -4,7 +4,7 @@ from tf_keras.models import Sequential
 from tf_keras.layers import Conv3D, MaxPooling3D, Flatten, Dense, Dropout
 from tf_keras.utils import to_categorical
 from sklearn.model_selection import train_test_split
-from augmentation import augment_data
+from eeg_classification.augmentation import augment_data
 
 
 # Assuming your data has the shape (epochs, channels, time)
@@ -27,7 +27,7 @@ def run_cnn(data_x, data_y, params):
         model = generate_model_5_classes(params)
     elif params["num_classes"] == 2:
         model = generate_model_2_classes(params)
-    
+        
     # Compile the model
     model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
@@ -42,13 +42,13 @@ def run_cnn(data_x, data_y, params):
 def generate_model_2_classes(params):
         # Build the model 2 classes 
     model = Sequential([
-        Conv3D(32, (3, 3, 3), activation='relu', input_shape=(params["num_epochs"], params["num_channels"], params["num_time_points"], 1)),
-        MaxPooling3D(pool_size=(2, 2, 2)),
-        Dropout(0.3),
-        Flatten(),
-        Dense(128, activation='relu'),
-        Dropout(0.5),
-        Dense(params["num_classes"], activation='softmax')
+            Conv3D(32, (3, 3, 3), activation='relu', input_shape=(params["num_epochs"], params["num_channels"], params["num_time_points"], 1)),
+            MaxPooling3D(pool_size=(2, 2, 2)),
+            Dropout(0.3),
+            Flatten(),
+            Dense(128, activation='relu'),
+            Dropout(0.5),
+            Dense(params["num_classes"], activation='softmax')
     ])
     return model
     
