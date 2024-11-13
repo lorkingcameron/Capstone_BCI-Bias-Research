@@ -10,15 +10,14 @@ This repo uses:
             - stanford-postagger.jar
         - Important steps:
             - Make sure to have an updated jdk, and to add JAVAHOME to path.
-
-    - **RoBERTa sentiment analyser**, installed under "models/roberta"
-        - Can be installed using the following code in the sentiment analysis on first run:
-        ```
-            MODEL = "cardiffnlp/twitter-roberta-base-emotion"
-            tokenizer = AutoTokenizer.from_pretrained(MODEL)
-            config = AutoConfig.from_pretrained(MODEL)
-            model = AutoModelForSequenceClassification.from_pretrained(MODEL)
-            model.save_pretrained('YOUR_PATH_TO_ROOT/models/roberta')
-            config.save_pretrained('YOUR_PATH_TO_ROOT/models/roberta')
-            tokenizer.save_pretrained('YOUR_PATH_TO_ROOT/models/roberta')
-        ```
+        - **RoBERTa sentiment analyser**, installed under "models/roberta"
+            - Can be installed using the following code in the sentiment analysis on first run:
+                ```
+                MODEL = "cardiffnlp/twitter-roberta-base-emotion"
+                tokenizer = AutoTokenizer.from_pretrained(MODEL)
+                config = AutoConfig.from_pretrained(MODEL)
+                model = AutoModelForSequenceClassification.from_pretrained(MODEL)
+                model.save_pretrained('YOUR_PATH_TO_ROOT/models/roberta')
+                config.save_pretrained('YOUR_PATH_TO_ROOT/models/roberta')
+                tokenizer.save_pretrained('YOUR_PATH_TO_ROOT/models/roberta')
+                ```
