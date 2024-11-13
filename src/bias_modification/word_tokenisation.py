@@ -19,6 +19,7 @@ def _is_replaceable(pos_tag):
     
 
 def _check_md(words_with_pos):
+    """ Returns the index and sentiment of the first word that is pos MD, or None if not found. """
     for index, (word, pos) in enumerate(words_with_pos):
         if _is_replaceable(pos) and pos == 'MD':
             # Only consider words that align with the overall phrase sentiment
@@ -28,6 +29,7 @@ def _check_md(words_with_pos):
 
 
 def _check_is(words_with_pos):
+    """ Returns the index and sentiment of the first word that is 'is', or None if not found. """
     for index, (word, pos) in enumerate(words_with_pos):
         if _is_replaceable(pos) and word == 'is':
             # Only consider words that align with the overall phrase sentiment
@@ -37,6 +39,7 @@ def _check_is(words_with_pos):
 
 
 def _check_not_and_only(words_with_pos):
+    """ Returns the index and sentiment of the first word that is 'not' or 'only', or None if not found. """
     for index, (word, pos) in enumerate(words_with_pos):
         if _is_replaceable(pos) and (word == 'not' or word == 'only'):
             # Only consider words that align with the overall phrase sentiment
@@ -46,6 +49,7 @@ def _check_not_and_only(words_with_pos):
 
 
 def _check_highest_contributing_word(words_with_pos, overall_sentiment):
+    """ Returns the index and sentiment of the word with the highest sentiment impact. """
     most_sentiment = None
     most_sentiment_index = None
     for index, (word, pos) in enumerate(words_with_pos):
