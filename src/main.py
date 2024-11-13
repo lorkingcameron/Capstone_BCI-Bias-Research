@@ -108,11 +108,21 @@ def main():
     
     negative_phrases, positive_phrases = extract_phrases_from_files()
     
-    for phrase in negative_phrases:
+     # Test specific index
+    negative_index_to_test = None
+    positive_index_to_test = None
+    
+    for index, phrase in enumerate(negative_phrases):
+        if negative_index_to_test and index != negative_index_to_test:
+            continue
+        
         perform_phrase_analysis(phrase)
         input("Press Enter to continue...")
         
-    for phrase in positive_phrases:
+    for index, phrase in enumerate(positive_phrases):
+        if positive_index_to_test and index != positive_index_to_test:
+            continue
+        
         perform_phrase_analysis(phrase)
         input("Press Enter to continue...")
 
