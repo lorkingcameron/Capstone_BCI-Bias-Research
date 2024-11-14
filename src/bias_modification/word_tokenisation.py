@@ -1,3 +1,4 @@
+import os 
 import numpy as np
 import nltk
 from nltk.tag.stanford import StanfordPOSTagger
@@ -5,6 +6,8 @@ from nltk.tokenize import word_tokenize
 from nltk.corpus import wordnet
 from bias_modification.sentiment_analysis import *
 
+
+PATH = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 
 # Ensure NLTK resources are available
 nltk.download('averaged_perceptron_tagger')
@@ -90,10 +93,10 @@ def tokenise_text(text):
     return text_tokenised
 
 
-def get_words_with_pos(abs_path, tokenised_input):
+def get_words_with_pos(tokenised_input):
     """Returns a list of tuples with words and their POS tags."""    
-    jar_path = f"{abs_path}/models/stanford_postagger/stanford-postagger.jar"
-    model_path = f"{abs_path}/models/stanford_postagger/english-left3words-distsim.tagger"
+    jar_path = f"{PATH}/models/stanford_postagger/stanford-postagger.jar"
+    model_path = f"{PATH}/models/stanford_postagger/english-left3words-distsim.tagger"
     
     tagger = StanfordPOSTagger(model_path, jar_path)
     return tagger.tag(tokenised_input)

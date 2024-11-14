@@ -1,11 +1,16 @@
+import os
 import scipy.io
 import numpy as np
 from sklearn.utils import shuffle
 import random
 
-def data_preprocessing_2_classes(abs_path):
+
+PATH = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+
+
+def data_preprocessing_2_classes():
     # Epoch * Channel * Time
-    file_path = abs_path + '/Processed Data/2 classes/'
+    file_path = f'{PATH}/Processed Data/2 classes/'
     file_list_length = 20
     all_data = {}
     data_x = []
@@ -39,9 +44,9 @@ def data_preprocessing_2_classes(abs_path):
     return all_data, x_shuffled, y_shuffled, max_epochs, max_channels, max_time
 
 
-def data_preprocessing_5_classes(abs_path):    
+def data_preprocessing_5_classes():    
     # Epoch * Channel * Time
-    file_path = abs_path + '/Processed Data/5 classes/'
+    file_path = f'{PATH}/Processed Data/2 classes/'
     file_list_length = 20
     classes = ['1', '2', '4', '5']
     all_data = {}

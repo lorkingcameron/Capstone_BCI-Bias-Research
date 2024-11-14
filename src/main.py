@@ -20,8 +20,8 @@ PATH = os.path.dirname(os.path.dirname(__file__))
 
 
 def perform_eeg_classification():
-    all_data, data_x, data_y, max_epochs, max_channels, time_points = data_preprocessing_2_classes(PATH)
-    # all_data, data_x, data_y, max_epochs, max_channels, time_points = data_preprocessing_5_classes(PATH)
+    all_data, data_x, data_y, max_epochs, max_channels, time_points = data_preprocessing_2_classes()
+    # all_data, data_x, data_y, max_epochs, max_channels, time_points = data_preprocessing_5_classes()
     # TODO modify 5 class to interpret as two without reduction in accuracy to improve data size
 
     print(data_x[0].shape)
@@ -75,7 +75,7 @@ def perform_phrase_analysis(text):
     print("\nTokens", tokenised_text)
     
     # Get POS tags for each word
-    tokenised_text_with_pos = get_words_with_pos(PATH, tokenised_text)
+    tokenised_text_with_pos = get_words_with_pos(tokenised_text)
     print("\nPOS", tokenised_text_with_pos)
     
     # Identify words to modify
