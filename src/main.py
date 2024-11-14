@@ -1,6 +1,8 @@
 
 import os
 
+from plot_generator import *
+
 from eeg_classification.preprocessing import *
 from eeg_classification.cnn import *
 
@@ -13,15 +15,14 @@ from bias_modification.reversal_word_augmentation import *
 
 # os.system("cls")
 # os.system("pip install -r requirements.txt")
-# os.system("cls")
 
 
 PATH = os.path.dirname(os.path.dirname(__file__))
 
 
 def perform_eeg_classification():
-    all_data, data_x, data_y, max_epochs, max_channels, time_points = data_preprocessing_2_classes()
-    # all_data, data_x, data_y, max_epochs, max_channels, time_points = data_preprocessing_5_classes()
+    # all_data, data_x, data_y, max_epochs, max_channels, time_points = data_preprocessing_2_classes()
+    all_data, data_x, data_y, max_epochs, max_channels, time_points = data_preprocessing_5_classes()
     # TODO modify 5 class to interpret as two without reduction in accuracy to improve data size
 
     print(data_x[0].shape)
@@ -32,26 +33,32 @@ def perform_eeg_classification():
         'num_epochs': max_epochs,
         'num_channels': max_channels,
         'num_time_points': time_points,
-        'num_classes': 2
+        'num_classes': 4
     }
     
     run_cnn(data_x, data_y, cnn_hyperparameters)
-    
 
-def perform_sentiment_analysis():
-    input_text = "The breathtaking scenery and delightful atmosphere made the experience unforgettable."
-    
-    # run_roberta_sentiment_analysis(input_phrase) -> for testing purposes
-    
-    # ! not working cause of t5 limitations
-    # neutralized_phrase = reinforce_neutralization(input_phrase)
-    # print("neutralized_phrase:", neutralized_phrase)
-    
-    # ! not working cause of t5 limitations
-    # model = train_model(list(word_sentiments.values()))
-    # modified_text = modify_text_with_model(text, model)
-    # print("modified_text:", modified_text)
 
+def perform_phrase_modification():
+    negative_phrases, positive_phrases = extract_phrases_from_files()
+    
+     # Test specific index
+    negative_index_to_test = None
+    positive_index_to_test = None
+    
+    for index, phrase in enumerate(negative_phrases):
+        if negative_index_to_test and index != negative_index_to_test:
+            continue
+        
+        modify_phrase(phrase)
+        input("Press Enter to continue...")
+        
+    for index, phrase in enumerate(positive_phrases):
+        if positive_index_to_test and index != positive_index_to_test:
+            continue
+        
+        modify_phrase(phrase)
+        input("Press Enter to continue...")
 
 
 def extract_phrases_from_files():
@@ -63,7 +70,7 @@ def extract_phrases_from_files():
     return negative_content, positive_content
     
 
-def perform_phrase_analysis(text):
+def modify_phrase(text):
     print("\nOriginal phrase:", text)
     
     # Get overall sentiment score for the text
@@ -101,30 +108,15 @@ def perform_phrase_analysis(text):
     updated_sentiment = run_roberta_sentiment_analysis(updated_text)
     print("Updated sentiment:", updated_sentiment)
 
+
 def main():
-    # perform_eeg_classification()
+    os.system("cls")
     
-    # perform_sentiment_analysis()
+    perform_eeg_classification()
     
-    negative_phrases, positive_phrases = extract_phrases_from_files()
+    # perform_phrase_modification()
     
-     # Test specific index
-    negative_index_to_test = None
-    positive_index_to_test = None
-    
-    for index, phrase in enumerate(negative_phrases):
-        if negative_index_to_test and index != negative_index_to_test:
-            continue
-        
-        perform_phrase_analysis(phrase)
-        input("Press Enter to continue...")
-        
-    for index, phrase in enumerate(positive_phrases):
-        if positive_index_to_test and index != positive_index_to_test:
-            continue
-        
-        perform_phrase_analysis(phrase)
-        input("Press Enter to continue...")
+    # generate_plot()
 
 
 if __name__ == "__main__":

@@ -135,7 +135,7 @@ def identify_words_to_modify(overall_sentiment, words_with_pos):
     if word_to_replace_sentiment is None:
         word_to_replace_sentiment, word_to_replace_index = _check_highest_contributing_word(words_with_pos, overall_sentiment)
  
-        # # ! Old code, considers all words of same sentiment direction at sentence
+        # ! DEPRECATED - considers all words of same sentiment direction at sentence
         # if np.sign(sentiment_score) == np.sign(overall_sentiment):
         #     potential_words_to_modify[index] = word
         #     word_sentiments[word] = sentiment_score
@@ -145,7 +145,7 @@ def identify_words_to_modify(overall_sentiment, words_with_pos):
     return potential_words_to_modify, word_sentiments
 
 
-# ! WIP Synonyms for neutralisation of sentiment
+# ! DEPRECATED - Synonyms for neutralisation of sentiment
 # def find_synonyms(word):
 #     '''
 #     Find synonyms for a given word using WordNet.
