@@ -29,19 +29,29 @@ def _check_md(words_with_pos):
 
 
 def _check_is(words_with_pos):
-    """ Returns the index and sentiment of the first word that is 'is', or None if not found. """
+    """ Returns the index and sentiment of the first word that is 'is' type, or None if not found. """
     for index, (word, pos) in enumerate(words_with_pos):
-        if _is_replaceable(pos) and word == 'is':
+        if _is_replaceable(pos) and word in ["is", "was", "are", "were", "am"]:
             # Only consider words that align with the overall phrase sentiment
             sentiment_score = run_roberta_sentiment_analysis(word)
             return sentiment_score, index
     return None, None
 
 
-def _check_not_and_only(words_with_pos):
-    """ Returns the index and sentiment of the first word that is 'not' or 'only', or None if not found. """
+def _check_only(words_with_pos):
+    """ Returns the index and sentiment of the first word that is 'only', or None if not found. """
     for index, (word, pos) in enumerate(words_with_pos):
-        if _is_replaceable(pos) and (word == 'not' or word == 'only'):
+        if _is_replaceable(pos) and word == 'only':
+            # Only consider words that align with the overall phrase sentiment
+            sentiment_score = run_roberta_sentiment_analysis(word)
+            return sentiment_score, index
+    return None, None
+
+
+def _check_not(words_with_pos):
+    """ Returns the index and sentiment of the first word that is 'not', or None if not found. """
+    for index, (word, pos) in enumerate(words_with_pos):
+        if _is_replaceable(pos) and word == 'not':
             # Only consider words that align with the overall phrase sentiment
             sentiment_score = run_roberta_sentiment_analysis(word)
             return sentiment_score, index
@@ -75,6 +85,7 @@ def _check_highest_contributing_word(words_with_pos, overall_sentiment):
 def tokenise_text(text):
     """Returns (list[str]) tokenised list of words from input text."""
     text_tokenised = word_tokenize(text)
+    text_tokenised = [word.lower() for word in text_tokenised]
     
     return text_tokenised
 
@@ -101,14 +112,20 @@ def identify_words_to_modify(overall_sentiment, words_with_pos):
     '''
     potential_words_to_modify = {}
     word_sentiments = {}
+    word_to_replace_sentiment = None
     
-    word_to_replace_sentiment, word_to_replace_index = _check_md(words_with_pos)
     
     if word_to_replace_sentiment is None:
         word_to_replace_sentiment, word_to_replace_index = _check_is(words_with_pos)
     
     if word_to_replace_sentiment is None:
-        word_to_replace_sentiment, word_to_replace_index = _check_not_and_only(words_with_pos)
+        word_to_replace_sentiment, word_to_replace_index = _check_only(words_with_pos)
+        
+    if word_to_replace_sentiment is None:
+        word_to_replace_sentiment, word_to_replace_index = _check_md(words_with_pos)
+        
+    if word_to_replace_sentiment is None:
+        word_to_replace_sentiment, word_to_replace_index = _check_not(words_with_pos)
         
     # maybe split by and or , to get both parts of compound sentence, or use nlp tree
         
@@ -120,7 +137,7 @@ def identify_words_to_modify(overall_sentiment, words_with_pos):
         #     potential_words_to_modify[index] = word
         #     word_sentiments[word] = sentiment_score
         
-    potential_words_to_modify[word_to_replace_index] = words_with_pos[word_to_replace_index][0]
+    potential_words_to_modify[word_to_replace_index] = words_with_pos[word_to_replace_index]
     word_sentiments[words_with_pos[word_to_replace_index][0]] = word_to_replace_sentiment
     return potential_words_to_modify, word_sentiments
 
