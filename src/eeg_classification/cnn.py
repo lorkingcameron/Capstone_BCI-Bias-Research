@@ -120,7 +120,7 @@ def generate_model_2_classes_eegnet(params):
             AveragePooling2D(pool_size=(1, 8)),
             SpatialDropout2D(dropout_rate),
             Flatten(),
-            Dense(2, activation='softmax')
+            Dense(1, activation='sigmoid')
     ])
     return model
   
