@@ -1,40 +1,48 @@
 import random
 import statistics
+import math
 import numpy as np
 import tensorflow as tf
 
-from sklearn.model_selection import StratifiedShuffleSplit
+from sklearn.model_selection import RepeatedStratifiedKFold
 
 from tf_keras.optimizers.legacy import Adam
 from tf_keras.constraints import max_norm
 from tf_keras.models import Sequential
 from tf_keras.layers import Conv2D, DepthwiseConv2D, SeparableConv2D, Conv3D, MaxPool2D, MaxPooling3D, Flatten, Dense, Dropout, BatchNormalization, Activation, AveragePooling2D, SpatialDropout2D
-from tf_keras.callbacks import ReduceLROnPlateau
+from tf_keras.callbacks import ReduceLROnPlateau, EarlyStopping
+from tf_keras.regularizers import l2
 from tf_keras.utils import to_categorical
 from tf_keras.backend import clear_session
 
 from plot_generator import *
 from eeg_classification.augmentation import augment_data
+from eeg_classification.early_stopping import DelayedEarlyStopping
 
 
 # * Assuming preprocessed data has the shape (channels, epochs, time)
 
 def run_cnn(data_x, data_y, params):
     random_seed = random.randint(0, 4294967295) #inclucive
-    # random_seed = 1612385895
+    random_seed = 1612385895
     print("Random Seed:", random_seed)
+
+    rskf = RepeatedStratifiedKFold(n_splits=4, n_repeats=4, random_state=random_seed)
     
-    sss = StratifiedShuffleSplit(n_splits=10, test_size=0.25, random_state=random_seed)
-    data_y = to_categorical(data_y, num_classes=params["num_classes"])
+    if params["num_classes"] > 2:
+        data_y = to_categorical(data_y, num_classes=params["num_classes"])
     
     losses = []
     accuracies = []
-    for i, (train_index, test_index) in enumerate(sss.split(data_x, data_y)):
+    for i, (train_index, test_index) in enumerate(rskf.split(data_x, data_y)):
         x_test = data_x[test_index]
         y_test = data_y[test_index]
         x_train = data_x[train_index]
         y_train = data_y[train_index]
-        # x_train, y_train = augment_data(data_x[test_index], data_y[test_index], num_augmentations=3)
+        
+        # Augment the data to grow sample size
+        x_train, y_train = augment_data(data_x[train_index], data_y[train_index], num_augmentations=2)
+        
         # Build the model
         if params['classifier_type'] == '2CNN':
             model = generate_model_2_classes(params)
@@ -44,13 +52,14 @@ def run_cnn(data_x, data_y, params):
             model = generate_model_5_classes(params)
         
         # Compile the model
-        optimizer = Adam(learning_rate=0.001, decay=1e-6)
-        loss_function = 'categorical_crossentropy' # if params["num_classes"] > 2 else 'binary_crossentropy'
+        optimizer = Adam(learning_rate=0.001)
+        loss_function = 'categorical_crossentropy' if params["num_classes"] > 2 else 'binary_crossentropy'
         model.compile(optimizer=optimizer, loss=loss_function, metrics=['accuracy'])
 
         # Train the model
         num_epochs = 500 if params["classifier_type"] == 'EEGNet' else 25
-        history = model.fit(x_train, y_train, epochs=num_epochs, validation_data=(x_test, y_test))
+        early_stopping = DelayedEarlyStopping(monitor='val_loss', min_epochs=5, patience=round(math.sqrt(num_epochs)), restore_best_weights=True)
+        history = model.fit(x_train, y_train, epochs=num_epochs, validation_data=(x_test, y_test), batch_size=8, shuffle=False, callbacks=[early_stopping])
 
         # Evaluate the model
         test_loss, test_acc = model.evaluate(data_x[test_index], data_y[test_index])
@@ -72,15 +81,15 @@ def generate_model_2_classes(params):
     print("Building 2CNN")
     # Build the model 2 classes 
     model = Sequential([
-            Conv3D(32, (3, 3, 3), activation='elu', input_shape=(params["num_channels"], params["num_epochs"], params["num_time_points"], 1)),
+            Conv3D(32, (3, 3, 3), use_bias=False, activation='relu', input_shape=(params["num_channels"], params["num_epochs"], params["num_time_points"], 1), padding='same'),
+            BatchNormalization(),
             MaxPooling3D(pool_size=(2, 2, 2)),
-            Dropout(0.3),
-            # Conv3D(64, (3, 3, 3), activation='elu'), # Adding another Conv3D layer
-            # MaxPooling3D(pool_size=(2, 2, 2)),
-            Flatten(),
-            Dense(128, activation='elu'),
             Dropout(0.5),
-            Dense(params["num_classes"], activation='softmax')
+            
+            Flatten(),
+            Dense(64, use_bias=False, activation='relu', kernel_regularizer=l2(0.01)),
+            Dropout(0.5),
+            Dense(1, activation='sigmoid')
     ])
     return model
 

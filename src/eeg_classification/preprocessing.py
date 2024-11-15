@@ -7,7 +7,6 @@ PATH = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 
 
 def extract_data(classes, classifier_type):
-    file_path = f'{PATH}/Processed Data/2 classes/' if classifier_type in ['EEGNet', '2CNN'] else f'{PATH}/Processed Data/5 classes/'
     file_list_length = 20
     data_x = []
     data_y = []
@@ -15,17 +14,17 @@ def extract_data(classes, classifier_type):
     for i in range(1, file_list_length + 1):
         # Two Class data
         if classifier_type in ['EEGNet', '2CNN']:
-                temp_pos_mat = scipy.io.loadmat(file_path + 'S' + str(i) + '_positive.set.mat')
+                temp_pos_mat = scipy.io.loadmat(f'{PATH}/Processed Data/2 classes/' + 'S' + str(i) + '_positive.set.mat')
                 data_x.append(temp_pos_mat['data'])
                 data_y.append(1)
                 
-                temp_neg_mat = scipy.io.loadmat(file_path + 'S' + str(i) + '_negative.set.mat')
+                temp_neg_mat = scipy.io.loadmat(f'{PATH}/Processed Data/2 classes/' + 'S' + str(i) + '_negative.set.mat')
                 data_x.append(temp_neg_mat['data'])
                 data_y.append(0)
         # Five Class data
         else:
             for class_index, class_name in enumerate(classes):
-                temp_mat = scipy.io.loadmat(file_path + 'S' + str(i) + '_class_' + class_name + '.set.mat')
+                temp_mat = scipy.io.loadmat(f'{PATH}/Processed Data/5 classes/' + 'S' + str(i) + '_class_' + class_name + '.set.mat')
                 data_x.append(temp_mat['data'])
                 data_y.append(class_index)
                 
@@ -53,10 +52,12 @@ def preprocess_data(classifier_type):
     # Flatten the epochs and the time axes if required
     if classifier_type == 'EEGNet':
         data_x_reshaped = data_x_reshaped.reshape((len(data_x_reshaped), max_channels, max_epochs * max_time, 1)) # Flatten the epochs and the time axes
+        
+    data_x_standardised = standardise_per_channel(data_x_reshaped)
     
-    print(data_x_reshaped.shape)
+    print(data_x_standardised.shape)
     
-    return data_x_reshaped, data_y, max_epochs, max_channels, max_time, len(classes)
+    return data_x_standardised, np.array(data_y), max_epochs, max_channels, max_time, len(classes)
 
 
 # def data_preprocessing_2_classes_eegnet():
@@ -188,8 +189,8 @@ def standardise_per_channel(data, epsilon=1e-8):
     # data shape: (samples, epochs, channels, time)
     
     # Calculate mean and std along the time axis (axis=-1) for each sample, epoch, and channel    
-    channel_stds = np.std(data, axis=(1, 3), keepdims=True)    # Shape: (samples, epochs, channels, 1)
-    channel_means = np.mean(data, axis=(1, 3), keepdims=True)  # Shape: (1, 1, channels, 1)
+    channel_stds = np.std(data, axis=(2, 3), keepdims=True)    # Shape: (samples, epochs, channels, 1)
+    channel_means = np.mean(data, axis=(2, 3), keepdims=True)  # Shape: (1, 1, channels, 1)
     
     # Standardize each channel independently along the time axis
     standardized_data = (data - channel_means) / (channel_stds + epsilon)
