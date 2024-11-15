@@ -1,8 +1,6 @@
 import random
 import statistics
 import math
-import numpy as np
-import tensorflow as tf
 
 from sklearn.model_selection import RepeatedStratifiedKFold
 
@@ -35,6 +33,9 @@ def run_cnn(data_x, data_y, params):
     losses = []
     accuracies = []
     for i, (train_index, test_index) in enumerate(rskf.split(data_x, data_y)):
+        print(f"Fold {i + 1}")
+        
+        # Initialise the data from the current fold
         x_test = data_x[test_index]
         y_test = data_y[test_index]
         x_train = data_x[train_index]
@@ -106,9 +107,9 @@ def generate_model_2_classes_eegnet(params):
     
     # Build the model 2 classes 
     model = Sequential([
-            Conv2D(F1, (1, 64), use_bias=False, input_shape=(params["num_channels"], params["num_time_points"] * params["num_epochs"], 1), padding='same'),
+            Conv2D(F1, (1, kern_length), use_bias=False, input_shape=(C, T, 1), padding='same'),
             BatchNormalization(),
-            DepthwiseConv2D((params["num_channels"], 1), use_bias=False, depth_multiplier=D, depthwise_constraint=max_norm(1.)),
+            DepthwiseConv2D((C, 1), use_bias=False, depth_multiplier=D, depthwise_constraint=max_norm(1.)),
             BatchNormalization(),
             Activation('elu'),
             AveragePooling2D(pool_size=(1, 4)),
@@ -136,8 +137,8 @@ def generate_model_5_classes(params):
         MaxPooling3D(pool_size=(2, 2, 2)),
         Dropout(0.5),
         Flatten(),
-        # Dense(128, activation='relu'),
-        # Dropout(0.5),
+        Dense(128, activation='relu'),
+        Dropout(0.5),
         Dense(params["num_classes"], activation='softmax')  # Output layer for 4 classes
     ])
     return model

@@ -123,7 +123,7 @@ def modify_phrase(text):
 def main():
     os.system("cls")
     
-    classify_eeg_data('2CNN') # Classifier types are '2CNN', '5CNN', 'EEGNet'
+    classify_eeg_data('EEGNet') # Classifier types are '2CNN', '5CNN', 'EEGNet'
     
     # modify_eeg_prompts_bias()
     
