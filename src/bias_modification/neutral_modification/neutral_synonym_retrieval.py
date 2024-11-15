@@ -2,7 +2,8 @@ import re
 from sentence_transformers import SentenceTransformer, util
 from nltk.corpus import wordnet
 from nltk.wsd import lesk
-from bias_modification.sentiment_analysis import *
+
+from bias_modification.sentiment_analysis import run_roberta_sentiment_analysis
 
 
 # Load embedding model for similarity check

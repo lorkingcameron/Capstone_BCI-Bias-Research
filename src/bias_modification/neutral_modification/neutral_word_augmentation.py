@@ -1,7 +1,7 @@
 import torch.nn as nn
 from sentence_transformers import util
 
-from bias_modification.neutral_synonym_retrieval import find_lower_sentiment_synonym, embedder
+from bias_modification.neutral_modification.neutral_synonym_retrieval import find_lower_sentiment_synonym, embedder
 
 
 # Check if sentence meaning is preserved using sentence embeddings

@@ -1,8 +1,9 @@
 import torch
 from transformers import T5ForConditionalGeneration, T5Tokenizer
-import numpy as np
-from bias_modification.sentiment_analysis import run_roberta_sentiment_analysis
 from langdetect import detect
+
+from bias_modification.sentiment_analysis import run_roberta_sentiment_analysis
+
 
 # Define a reward function to encourage neutrality
 def calculate_reward(generated_text):

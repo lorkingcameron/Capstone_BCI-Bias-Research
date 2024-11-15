@@ -1,19 +1,11 @@
 import os 
-import numpy as np
-import nltk
 from nltk.tag.stanford import StanfordPOSTagger
 from nltk.tokenize import word_tokenize
-from nltk.corpus import wordnet
-from bias_modification.sentiment_analysis import *
+
+from bias_modification.sentiment_analysis import run_roberta_sentiment_analysis
 
 
 PATH = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
-
-# Ensure NLTK resources are available
-nltk.download('averaged_perceptron_tagger')
-nltk.download('wordnet')
-nltk.download('punkt_tab')
-nltk.download('averaged_perceptron_tagger_eng')
 
 
 def _is_replaceable(pos_tag):

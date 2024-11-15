@@ -2,7 +2,6 @@ import os
 import spacy
 from nltk.tag.stanford import StanfordPOSTagger
 from nltk.corpus import wordnet as wn
-from bias_modification.sentiment_analysis import run_roberta_sentiment_analysis
 
 
 PATH = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
@@ -40,7 +39,6 @@ def _join_with_sentence_formatting(tokens: list[str]):
         updated_tokens.append(token)
 
     return " ".join(updated_tokens).replace(" - ", "-").capitalize()
-
 
 
 def get_antonym(word, word_pos):
