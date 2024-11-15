@@ -1,17 +1,27 @@
 
 import os
+import typing
+import nltk
 
 from plot_generator import *
 
 from eeg_classification.preprocessing import *
 from eeg_classification.cnn import *
 
-from bias_modification.nlp_phrase_augmentation import *
+from bias_modification.neutral_modification.nlp_phrase_augmentation import *
+from bias_modification.neutral_modification.neutral_word_augmentation import *
+
 from bias_modification.sentiment_analysis import *
 from bias_modification.word_tokenisation import *
-from bias_modification.neutral_word_augmentation import *
 from bias_modification.reversal_word_augmentation import *
 
+
+
+# Ensure NLTK resources are available
+nltk.download('averaged_perceptron_tagger')
+nltk.download('wordnet')
+nltk.download('punkt_tab')
+nltk.download('averaged_perceptron_tagger_eng')
 
 # os.system("cls")
 # os.system("pip install -r requirements.txt")
@@ -20,12 +30,12 @@ from bias_modification.reversal_word_augmentation import *
 PATH = os.path.dirname(os.path.dirname(__file__))
 
 
-def perform_eeg_classification():
-    # all_data, data_x, data_y, max_epochs, max_channels, time_points = data_preprocessing_2_classes()
-    all_data, data_x, data_y, max_epochs, max_channels, time_points = data_preprocessing_5_classes()
-    # TODO modify 5 class to interpret as two without reduction in accuracy to improve data size
+type EEG_Classifier_Type = typing.Literal['2CNN', '5CNN', 'EEGNet']
+def classify_eeg_data(classifier_type: EEG_Classifier_Type):
+    data_x, data_y, max_epochs, max_channels, time_points, num_classes = preprocess_data(classifier_type)
 
-    print(data_x[0].shape)
+    # TODO modify 5 class to interpret as two without reduction in accuracy to improve data size
+    
     print(data_y)
     print(max_epochs, max_channels, time_points)
 
@@ -33,13 +43,14 @@ def perform_eeg_classification():
         'num_epochs': max_epochs,
         'num_channels': max_channels,
         'num_time_points': time_points,
-        'num_classes': 4
+        'num_classes': num_classes,
+        'classifier_type': classifier_type
     }
     
     run_cnn(data_x, data_y, cnn_hyperparameters)
 
 
-def perform_phrase_modification():
+def modify_eeg_prompts_bias():
     negative_phrases, positive_phrases = extract_phrases_from_files()
     
      # Test specific index
@@ -112,11 +123,11 @@ def modify_phrase(text):
 def main():
     os.system("cls")
     
-    perform_eeg_classification()
+    classify_eeg_data('2CNN') # Classifier types are '2CNN', '5CNN', 'EEGNet'
     
-    # perform_phrase_modification()
+    # modify_eeg_prompts_bias()
     
-    # generate_plot()
+    # generate_custom_cnn_plot()
 
 
 if __name__ == "__main__":

@@ -34,14 +34,14 @@ def augment_data(x_data, y_data, num_augmentations=3):
             # Apply each augmentation randomly
             if np.random.rand() < 0.5:
                 x = add_gaussian_noise(x)
-            if np.random.rand() < 0.5:
-                x = time_shift(x)
-            if np.random.rand() < 0.5:
-                x = scale_amplitude(x)
-            if np.random.rand() < 0.5:
-                x = shuffle_channels(x)
-            if np.random.rand() < 0.5:
-                x = flip_data(x)
+            # if np.random.rand() < 0.5:
+            #     x = time_shift(x)
+            # if np.random.rand() < 0.5:
+            #     x = scale_amplitude(x)
+            # if np.random.rand() < 0.5:
+            #     x = shuffle_channels(x)
+            # if np.random.rand() < 0.5:
+            #     x = flip_data(x)
             augmented_data.append(x)
     
     # Combine original and augmented data
